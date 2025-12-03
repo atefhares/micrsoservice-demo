@@ -5,7 +5,7 @@ on:
     branches:
       - main 
 
-# Mandatory: Configure GitHub's OIDC token permissions for WIF
+# OIDC token permissions for WIF
 permissions:
   contents: 'read'
   id-token: 'write'
@@ -24,7 +24,7 @@ env:
   
   # GKE/Deployment Configuration
   GKE_CLUSTER: cluster-1
-  HELM_CHART_PATH: ./helm
+  HELM_CHART_PATH: ./helm/microservice-app-chart
   HELM_RELEASE_NAME: microservice-app
 
 jobs:
@@ -65,7 +65,6 @@ jobs:
           docker push ${{ env.FULL_IMAGE_NAME }}
           echo "Successfully pushed ${{ env.FULL_IMAGE_NAME }}"
       
-      # 4. Get GKE Credentials
       - name: Get GKE credentials
         uses: google-github-actions/get-gke-credentials@v2
         with:
@@ -73,12 +72,9 @@ jobs:
           location: ${{ env.REGION }}
           project_id: ${{ env.PROJECT_ID }}
       
-      # # 5. Deploy to GKE using Helm
-      # - name: Deploy application with Helm
-      #   run: |
-      #     # Use helm upgrade --install to create the release if it doesn't exist or update it
-      #     # The key 'image.tag' is a common convention to override the image tag in values.yaml
-      #     helm upgrade --install ${{ env.HELM_RELEASE_NAME }} ${{ env.HELM_CHART_PATH }} \
-      #       --set image.repository=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.AR_REPO }}/${{ env.IMAGE_NAME }} \
-      #       --set image.tag=${{ env.IMAGE_TAG }} \
-      #       --wait
+      - name: Deploy application with Helm
+        run: |
+          helm upgrade --install ${{ env.HELM_RELEASE_NAME }} ${{ env.HELM_CHART_PATH }} \
+            --set image.repository=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.AR_REPO }}/${{ env.IMAGE_NAME }} \
+            --set image.tag=${{ env.IMAGE_TAG }} \
+            --wait
