@@ -27,3 +27,28 @@ module "cluster-1" {
 
   max_pods_per_node = 32
 }
+
+module "cluster-1-nodepool-1" {
+  source       = "./modules/gke-nodepool"
+  project_id = local.project_id
+  cluster_name = module.cluster-1.name
+  location   = local.region
+  name         = "nodepool-1"
+  node_config = {
+    machine_type        = "n2-standard-2"
+    disk_size_gb        = 50
+    disk_type           = "pd-ssd"
+    ephemeral_ssd_count = 1
+    gvnic               = true
+  }
+  nodepool_config = {
+    autoscaling = {
+      max_node_count = 3
+      min_node_count = 1
+    }
+    management = {
+      auto_repair  = true
+      auto_upgrade = true
+    }
+  }
+}
