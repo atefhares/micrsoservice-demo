@@ -3,7 +3,10 @@ name: Build and Deploy
 on:
   push:
     branches:
-      - main 
+      - main
+    paths:
+      - 'Microservices/**'
+      - 'helm/microservice-app-chart/**'
 
 # OIDC token permissions for WIF
 permissions:
