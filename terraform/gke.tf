@@ -8,7 +8,7 @@ module "cluster-1" {
     dns_access = false
     ip_access = {
       authorized_ranges = {
-        internal-vms = "10.0.0.0/8"
+        internal-vms = "0.0.0.0/0" # Using GH public runners 
       }
       gcp_public_cidrs_access_enabled = true
     }
