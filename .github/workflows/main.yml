@@ -61,7 +61,7 @@ jobs:
 
       - name: Build and Push Docker Image
         run: |
-          docker build -t ${{ env.FULL_IMAGE_NAME }} .
+          docker build -t ${{ env.FULL_IMAGE_NAME }} ./Microservices
           docker push ${{ env.FULL_IMAGE_NAME }}
           echo "Successfully pushed ${{ env.FULL_IMAGE_NAME }}"
       
