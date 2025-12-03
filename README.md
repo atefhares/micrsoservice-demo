@@ -136,9 +136,9 @@ terraform destroy
 This project includes support for deploying the infrastructure and application using **GitHub Actions**.
 The deployment can occur automatically when pushing changes.
 
----
 
-## 🔄 **Automated Deployment (Push to `main`)**
+
+### 🔄 **Automated Deployment (Push to `main`)**
 
 GitHub Actions can automatically run deployment pipelines when changes are pushed to the `main` branch.
 
