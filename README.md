@@ -1,6 +1,6 @@
 # Terraform Project Documentation
 
-## 📁 Project Structure
+### 📁 Project Structure
 
 ```
 .
@@ -20,10 +20,8 @@
 ├── terraform.tf
 └── workload_identity.tf
 ```
-
 ---
-
-## 📄 File & Module Overview
+### 📄 File & Module Overview
 
 ### **Root Terraform Files**
 
@@ -37,7 +35,6 @@
 | **acr.tf**               | Creates Artifact Registry repositories (Docker, Helm, etc.).                         |
 | **workload_identity.tf** | Manages Workload Identity bindings between GCP and GitHub Actions.      |
 
----
 
 ## 📦 Modules
 
@@ -89,73 +86,87 @@ Manages:
 * IAM bindings
 * Workload Identity federation
 
+</br>
+</br>
+
+## 🚀 Usage Instructions
+
+### Initialize Terraform
+
+```
+terraform init
+```
+
+This downloads all providers and modules.
+
+### Validate Configuration
+```
+terraform validate
+```
+
+### Format Code
+
+```
+terraform fmt
+```
+
+### Preview Infrastructure Changes
+
+```
+terraform plan -out=plan.out
+```
+
+### Apply the Infrastructure
+
+```
+terraform apply plan.out
+```
+
+### Destroy Infrastructure (if needed)
+
+```
+terraform destroy
+```
+
+</br>
+</br>
+
+# 🚀 CI/CD Deployment Using GitHub Actions
+
+This project includes support for deploying the infrastructure and application using **GitHub Actions**.
+The deployment can occur automatically when pushing changes.
+
 ---
 
-## 🚀 Application Deployment Screenshots
+## 🔄 **Automated Deployment (Push to `main`)**
+
+GitHub Actions can automatically run deployment pipelines when changes are pushed to the `main` branch.
+
+### **Trigger Conditions**
+
+The workflow runs on:
+
+- **Application code updates**: changes under `./Microservices/**`
+
+- **Helm chart/Kubernetes manifest updates**: changes under `./helm/microservice-app-chart/**`
+
+---
+
+## Screenshots
 
 ### **1. Application Deployment on GKE**
 
-*Add screenshots showing:*
+![App Deployment Screenshot 1](./screenshots/app_deployment1.png)
 
-* Kubernetes manifests apply output
-* Pods running
-* Services and load balancers
-* Ingress configuration
-* Application UI running in browser
-
-**Screenshot Placeholder:**
-
-```
-![App Deployment Screenshot](screenshots/app_deployment.png)
-```
+![App Deployment Screenshot 2](./screenshots/app_deployment2.png)
 
 ---
 
 ## 🏗️ Infrastructure Deployment Screenshots
 
-### **2. Terraform Infra Deployment**
+### **2. Infra Deployment**
 
-*Add screenshots showing:*
+![Infrastructure Deployment Screenshot 1](./screenshots/infra1.png)
+![Infrastructure Deployment Screenshot 2](./screenshots/infra2.png)
+![Infrastructure Deployment Screenshot 3](./screenshots/infra3.png)
 
-* Terraform plan
-* Terraform apply
-* GCP Console resources after deployment
-* GKE dashboard
-* VPC, subnets, NAT, Artifact Registry, node pools
-
-**Screenshot Placeholder:**
-
-```
-![Infrastructure Deployment Screenshot](screenshots/infra_deployment.png)
-```
-
----
-
-## 📌 Notes
-
-* Ensure screenshots are placed in a folder named **`screenshots/`** at the root of the repo.
-* Update the paths above if you store them elsewhere.
-
----
-
-## ✔️ Version Control Recommendation
-
-Add the following to `.gitignore`:
-
-```
-.terraform/
-.terraform.lock.hcl
-*.tfstate
-*.tfstate.backup
-secret.auto.tfvars
-```
-
----
-
-If you'd like, I can also:
-✅ Add a diagram section
-✅ Generate architecture diagrams
-✅ Add usage instructions (init/plan/apply)
-✅ Add module-level documentation
-
-Just tell me!
