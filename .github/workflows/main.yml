@@ -14,7 +14,7 @@ env:
   # GCP Configuration
   PROJECT_ID: atefhares-atefpg
   SA_EMAIL: github-actions@atefhares-atefpg.iam.gserviceaccount.com
-  WIF_PROVIDER: projects/atefhares-atefpg/locations/global/workloadIdentityPools/gh-action-pool/providers/gh-action-provider
+  WIF_PROVIDER: projects/626069473788/locations/global/workloadIdentityPools/gh-action-pool/providers/gh-action-provider
   
   # Image/Registry Configuration
   AR_REGION: me-central2
