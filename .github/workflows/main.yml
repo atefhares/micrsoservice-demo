@@ -1,0 +1,84 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - main 
+
+# Mandatory: Configure GitHub's OIDC token permissions for WIF
+permissions:
+  contents: 'read'
+  id-token: 'write'
+
+env:
+  # GCP Configuration
+  PROJECT_ID: atefhares-atefpg
+  SA_EMAIL: github-actions@atefhares-atefpg.iam.gserviceaccount.com
+  WIF_PROVIDER: projects/atefhares-atefpg/locations/global/workloadIdentityPools/gh-action-pool/providers/gh-action-provider
+  
+  # Image/Registry Configuration
+  AR_REGION: me-central2
+  AR_REPO: microservice-app-repo
+  IMAGE_NAME: microservice-app
+  
+  # GKE/Deployment Configuration
+  GKE_CLUSTER: cluster-1
+  GKE_ZONE: me-central2-a
+  HELM_CHART_PATH: ./helm
+  HELM_RELEASE_NAME: microservice-app
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Authenticate to GCP
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ env.WIF_PROVIDER }}
+          service_account: ${{ env.SA_EMAIL }}
+          project_id: ${{ env.PROJECT_ID }}
+
+      - name: Set up gcloud and dependencies
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          install_components: 'gke-gcloud-auth-plugin'
+
+      - name: Configure Docker to push to ACR
+        run: gcloud auth configure-docker ${{ env.AR_REGION }}-docker.pkg.dev
+
+      - name: Set Image Tag and Full Path
+        id: image_tag
+        run: |
+          IMAGE_TAG=${{ github.sha }}
+          FULL_IMAGE_NAME=${{ env.AR_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.AR_REPO }}/${{ env.IMAGE_NAME }}:${IMAGE_TAG}
+          echo "FULL_IMAGE_NAME=$FULL_IMAGE_NAME" >> $GITHUB_ENV
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+
+      - name: Build and Push Docker Image
+        run: |
+          docker build -t ${{ env.FULL_IMAGE_NAME }} .
+          docker push ${{ env.FULL_IMAGE_NAME }}
+          echo "Successfully pushed ${{ env.FULL_IMAGE_NAME }}"
+      
+      # 4. Get GKE Credentials
+      - name: Get GKE credentials
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: ${{ env.GKE_CLUSTER }}
+          location: ${{ env.GKE_ZONE }}
+          project_id: ${{ env.PROJECT_ID }}
+      
+      # 5. Deploy to GKE using Helm
+      - name: Deploy application with Helm
+        run: |
+          # Use helm upgrade --install to create the release if it doesn't exist or update it
+          # The key 'image.tag' is a common convention to override the image tag in values.yaml
+          helm upgrade --install ${{ env.HELM_RELEASE_NAME }} ${{ env.HELM_CHART_PATH }} \
+            --set image.repository=${{ env.AR_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.AR_REPO }}/${{ env.IMAGE_NAME }} \
+            --set image.tag=${{ env.IMAGE_TAG }} \
+            --wait

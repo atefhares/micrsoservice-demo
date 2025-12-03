@@ -1,0 +1,4 @@
+venv
+*/.terraform
+/cloud-foundation-fabric
+*.DS_Store*
