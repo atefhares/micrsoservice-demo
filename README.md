@@ -4,36 +4,37 @@
 
 ```
 .
-├── acr.tf
-├── gke.tf
-├── local.tf
-├── modules
-│   ├── gke-cluster-standard
-│   ├── gke-nodepool
-│   ├── net-address
-│   ├── net-cloudnat
-│   ├── net-vpc
-│   ├── net-vpc-firewall
-│   └── workload-identity
-├── networking.tf
-├── provider.tf
-├── terraform.tf
-└── workload_identity.tf
+├── helm
+│   └── microservice-app-chart           # Helm chart for deploying microservice app
+├── screenshots                          # Screenshots for dashboards,infra and app deployment
+├── infra                                # Terraform scripts to provision GCP infrastructure
+│   ├── acr.tf                           # Container Registry (GCP Artifact Registry)
+│   ├── gke.tf                           # GKE cluster provisioning
+│   ├── local.tf                         # Local variables & backend configuration
+│   ├── modules                          # Reusable Terraform modules (e.g., GKE cluster, networking)
+│   ├── monitoring.tf                    # Dashboards & metrics setup
+│   ├── networking.tf                    # VPC, subnets, firewall rules
+│   ├── provider.tf                      # Terraform provider configuration
+│   ├── terraform.tf                     # Terraform initialization file
+│   └── workload_identity.tf             # Workload Identity & IAM bindings
+├── Microservices                        # Python microservice application
+│   ├── app                              # Application code
+│   ├── Dockerfile                       # Dockerfile to containerize the app
+│   ├── requirements.txt                 # Python dependencies
+│   └── run.py                           # Entry point for the app
+└── README.md
+
 ```
----
-### 📄 File & Module Overview
 
-### **Root Terraform Files**
+## Requirements
 
-| File                     | Description                                                                          |
-| ------------------------ | ------------------------------------------------------------------------------------ |
-| **provider.tf**          | Defines Google Cloud provider configuration, authentication, and required providers. |
-| **terraform.tf**         | Backend settings, Terraform version, and provider requirements.                      |
-| **local.tf**             | Stores computed local variables used across the configuration.                       |
-| **networking.tf**        | Declares VPC, subnets, firewall rules, NAT gateway, and IP ranges.                   |
-| **gke.tf**               | Configures the GKE cluster and node pools using included modules.                    |
-| **acr.tf**               | Creates Artifact Registry repositories (Docker, Helm, etc.).                         |
-| **workload_identity.tf** | Manages Workload Identity bindings between GCP and GitHub Actions.      |
+- Terraform >= 1.12.2
+
+- Google Cloud SDK (gcloud)
+
+- Helm >= 3.0
+
+- Docker >= 20.x
 
 
 ## 📦 Modules
@@ -170,3 +171,11 @@ The workflow runs on:
 ![Infrastructure Deployment Screenshot 2](./screenshots/infra2.png)
 ![Infrastructure Deployment Screenshot 3](./screenshots/infra3.png)
 
+
+---
+## 🏗️ Monitoring Dashboards Screenshots
+
+### **2. Infra Deployment**
+
+![Monitoring Dashboard Screenshot 1](./screenshots/monitoring1.png)
+![Monitoring Dashboard Screenshot 2](./screenshots/monitoring2.png)
