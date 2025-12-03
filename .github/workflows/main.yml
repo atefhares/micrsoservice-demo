@@ -16,14 +16,14 @@ env:
   SA_EMAIL: github-actions@atefhares-atefpg.iam.gserviceaccount.com
   WIF_PROVIDER: projects/626069473788/locations/global/workloadIdentityPools/gh-action-pool/providers/gh-action-provider
   
+  REGION: me-central2
+
   # Image/Registry Configuration
-  AR_REGION: me-central2
   AR_REPO: microservice-app-repo
   IMAGE_NAME: microservice-app
   
   # GKE/Deployment Configuration
   GKE_CLUSTER: cluster-1
-  GKE_ZONE: me-central2-a
   HELM_CHART_PATH: ./helm
   HELM_RELEASE_NAME: microservice-app
 
@@ -49,13 +49,13 @@ jobs:
           install_components: 'gke-gcloud-auth-plugin'
 
       - name: Configure Docker to push to ACR
-        run: gcloud auth configure-docker ${{ env.AR_REGION }}-docker.pkg.dev
+        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
 
       - name: Set Image Tag and Full Path
         id: image_tag
         run: |
           IMAGE_TAG=${{ github.sha }}
-          FULL_IMAGE_NAME=${{ env.AR_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.AR_REPO }}/${{ env.IMAGE_NAME }}:${IMAGE_TAG}
+          FULL_IMAGE_NAME=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.AR_REPO }}/${{ env.IMAGE_NAME }}:${IMAGE_TAG}
           echo "FULL_IMAGE_NAME=$FULL_IMAGE_NAME" >> $GITHUB_ENV
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
 
@@ -65,13 +65,13 @@ jobs:
           docker push ${{ env.FULL_IMAGE_NAME }}
           echo "Successfully pushed ${{ env.FULL_IMAGE_NAME }}"
       
-      # # 4. Get GKE Credentials
-      # - name: Get GKE credentials
-      #   uses: google-github-actions/get-gke-credentials@v2
-      #   with:
-      #     cluster_name: ${{ env.GKE_CLUSTER }}
-      #     location: ${{ env.GKE_ZONE }}
-      #     project_id: ${{ env.PROJECT_ID }}
+      # 4. Get GKE Credentials
+      - name: Get GKE credentials
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: ${{ env.GKE_CLUSTER }}
+          location: ${{ env.REGION }}
+          project_id: ${{ env.PROJECT_ID }}
       
       # # 5. Deploy to GKE using Helm
       # - name: Deploy application with Helm
@@ -79,6 +79,6 @@ jobs:
       #     # Use helm upgrade --install to create the release if it doesn't exist or update it
       #     # The key 'image.tag' is a common convention to override the image tag in values.yaml
       #     helm upgrade --install ${{ env.HELM_RELEASE_NAME }} ${{ env.HELM_CHART_PATH }} \
-      #       --set image.repository=${{ env.AR_REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.AR_REPO }}/${{ env.IMAGE_NAME }} \
+      #       --set image.repository=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.AR_REPO }}/${{ env.IMAGE_NAME }} \
       #       --set image.tag=${{ env.IMAGE_TAG }} \
       #       --wait
